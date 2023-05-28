@@ -68,6 +68,16 @@ const resolvePlatformState = (): [Platform, string] => {
 
 	const config = createVSCodeWebConfig(platform, repository);
 
+	let builtinExtensions: any[] | ((a: any[]) => any[]) = window.github1sExtensions || [];
+
+	if (platform === Platform.JungleTVAF) {
+		builtinExtensions = (initialSet: any[]) => {
+			initialSet = initialSet.filter((e) => e.extensionPath !== 'typescript-language-features');
+			initialSet.push(...(window.github1sExtensions || []));
+			return initialSet;
+		};
+	}
+
 	(window as any).vscodeWeb = {
 		commands: vscodeCommands,
 		allowEditorLabelOverride: true,
@@ -75,7 +85,7 @@ const resolvePlatformState = (): [Platform, string] => {
 		webviewEndpoint: staticAssetsPrefix + '/vscode/vs/workbench/contrib/webview/browser/pre',
 		productConfiguration: createProductConfiguration(platform),
 		initialColorTheme: { themeType: 'dark' as any },
-		builtinExtensions: window.github1sExtensions || [],
+		builtinExtensions,
 		onWorkbenchReady() {
 			const loadSpinner = document.querySelector('#load-spinner');
 			loadSpinner && loadSpinner.remove();

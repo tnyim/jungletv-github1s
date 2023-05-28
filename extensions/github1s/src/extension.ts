@@ -3,17 +3,16 @@
  * @author netcon
  */
 
-import router from '@/router';
-import * as vscode from 'vscode';
-import { PageType } from './adapters/types';
-import { registerCustomViews } from '@/views';
-import { decorateStatusBar } from '@/statusbar';
+import { adapterManager, registerAdapters } from '@/adapters';
+import { updateSourceControlChanges } from '@/changes';
+import { registerGitHub1sCommands } from '@/commands';
+import { addRecentRepositories, setExtensionContext } from '@/helpers/context';
 import { registerEventListeners } from '@/listeners';
 import { registerVSCodeProviders } from '@/providers';
-import { registerGitHub1sCommands } from '@/commands';
-import { updateSourceControlChanges } from '@/changes';
-import { adapterManager, registerAdapters } from '@/adapters';
-import { addRecentRepositories, setExtensionContext } from '@/helpers/context';
+import router from '@/router';
+import { registerCustomViews } from '@/views';
+import * as vscode from 'vscode';
+import { PageType } from './adapters/types';
 
 const browserUrlManager = {
 	href: () => vscode.commands.executeCommand('github1s.commands.vscode.getBrowserUrl') as Promise<string>,
@@ -41,6 +40,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		registerCustomViews(),
 		updateSourceControlChanges(),
 	]);
+
+	if (vscode.env.appName === 'JungleTV AF Editor') {
+		vscode.commands.executeCommand('workbench.extensions.installExtension', 'johnsoncodehk.vscode-typescript-web');
+	}
 
 	initialVSCodeState();
 }
