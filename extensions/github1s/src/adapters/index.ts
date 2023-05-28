@@ -13,7 +13,7 @@ import { DataSource, PlatformName, RouterParser } from './types';
 
 const emptyAdapter = {
 	scheme: 'empty',
-	platformName: PlatformName.GitHub,
+	platformName: PlatformName.JungleTVAF,
 	resolveDataSource: () => new DataSource(),
 	resolveRouterParser: () => new RouterParser(),
 };

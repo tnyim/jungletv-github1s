@@ -30,7 +30,7 @@ const VSCODE_NODE_MODULES = [
 	globOptions: { dot: true },
 	to({ context, absoluteFilename }) {
 		const relativePath = path.relative(context, absoluteFilename);
-		const relativeDir = path.dirname(relativePath.replace('vscode-web/node_modules/', ''));
+		const relativeDir = path.dirname(relativePath.replace('vscode-web' + path.sep + 'node_modules' + path.sep, ''));
 		return `static-${STATIC_HASH}/node_modules/${relativeDir}/[name][ext]`;
 	},
 	...skipMinified,
@@ -86,7 +86,6 @@ module.exports = (env, argv) => {
 					staticHash: STATIC_HASH,
 					spinnerStyle: minifyCSS(fs.readFileSync('./public/spinner.css').toString()),
 					pageTitleScript: minifyJS(fs.readFileSync('./public/page-title.js').toString()),
-					analyticsScript: devMode ? '' : minifyJS(fs.readFileSync('./public/analytics.js').toString()),
 				},
 			}),
 			new webpack.DefinePlugin({

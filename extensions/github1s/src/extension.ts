@@ -40,7 +40,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		registerGitHub1sCommands(),
 		registerCustomViews(),
 		updateSourceControlChanges(),
-		decorateStatusBar(),
 	]);
 
 	initialVSCodeState();

@@ -1,10 +1,10 @@
 import { Platform } from './config';
 
 export const createProductConfiguration = (platform: Platform) => ({
-	nameShort: platform + '1s',
-	nameLong: platform + '1s',
-	applicationName: platform + '1s',
-	reportIssueUrl: 'https://github.com/conwnet/github1s/issues/new',
+	nameShort: platform === Platform.JungleTVAF ? 'JAF Editor' : platform + '1s',
+	nameLong: platform === Platform.JungleTVAF ? 'JungleTV AF Editor' : platform + '1s',
+	applicationName: platform === Platform.JungleTVAF ? 'jtvafe' : platform + '1s',
+	reportIssueUrl: 'https://github.com/gbl08ma/github1s/issues/new',
 	extensionsGallery: {
 		serviceUrl: 'https://marketplace.visualstudio.com/_apis/public/gallery',
 		cacheUrl: 'https://vscode.blob.core.windows.net/gallery/index',
@@ -29,6 +29,7 @@ export const createProductConfiguration = (platform: Platform) => ({
 		'*.sourcegraph.com',
 		'*.gitpod.io',
 		'*.ossinsight.io',
+		'*.jungletv.live',
 	],
 	extensionEnabledApiProposals: { 'ms-vscode.anycode': ['extensionsAny'] },
 });

@@ -3,6 +3,7 @@
  * @author netcon
  */
 
+import { Platform } from './config';
 import './notification.css';
 
 const NOTIFICATION_STORAGE_KEY = 'GITHUB1S_NOTIFICATION';
@@ -23,6 +24,15 @@ export const renderNotification = (platform: string) => {
 			link: 'https://github.com/conwnet/github1s',
 		},
 	];
+
+	if (platform === Platform.JungleTVAF) {
+		notifications[0] = {
+			title: 'Welcome to the JungleTV AF VSCode-based Editor',
+			content:
+				'This is a custom distribution of Visual Studio Code that is specifically designed for JungleTV Application Framework projects. It is based on github1s, which is not officially provided by GitHub nor Microsoft.',
+			link: 'https://github.com/conwnet/github1s',
+		};
+	}
 
 	const notificationBlocksHtml = notifications.map((item) => {
 		const linkHtml = item.link

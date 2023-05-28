@@ -7,7 +7,7 @@ APP_ROOT=$(pwd)
 function build_github1s_extensions() {
 	for entry in "${APP_ROOT}/extensions"/*
 	do
-		if [ -f "$entry/package.json" ]
+		if [ -f "$entry/package.json" ] && [ ! -f "$entry/do_not_compile" ]
 		then
 			cd $entry
 			yarn compile

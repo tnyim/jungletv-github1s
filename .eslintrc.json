@@ -56,7 +56,8 @@
         "selector": "class",
         "format": ["PascalCase"]
       }
-    ]
+    ],
+    "prettier/prettier": ["error", { "endOfLine": "auto" }]
   },
   "overrides": [
     {

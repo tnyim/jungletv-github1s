@@ -7,6 +7,7 @@ import githubLogoUrl from './assets/github.svg';
 import gitlabLogoUrl from './assets/gitlab.svg';
 import bitbucketLogoUrl from './assets/bitbucket.svg';
 import npmLogoUrl from './assets/npm.svg';
+import jtvafLogoUrl from './assets/jungletvaf.svg';
 
 const createFolderWorkspace = (scheme: string) => ({
 	folderUri: { scheme, authority: '', path: '/', query: '', fragment: '' },
@@ -14,6 +15,15 @@ const createFolderWorkspace = (scheme: string) => ({
 
 const openGitHub1sPage = () => {
 	return window.open('https://github.com/conwnet/github1s', '_blank');
+};
+
+const openJungleTVPage = () => {
+	return window.open('https://jungletv.live', '_blank');
+};
+
+const openJungleTVApplicationPage = (repository: string) => {
+	// TODO
+	return window.open('https://jungletv.live', '_blank');
 };
 
 const openOfficialPage = (origin: string) => {
@@ -55,6 +65,7 @@ export enum Platform {
 	GitLab = 'GitLab',
 	Bitbucket = 'Bitbucket',
 	npm = 'npm',
+	JungleTVAF = 'JungleTVAF',
 }
 
 export const createVSCodeWebConfig = (platform: Platform, repository: string): any => {
@@ -103,6 +114,22 @@ export const createVSCodeWebConfig = (platform: Platform, repository: string): a
 				title: 'Open on npm',
 				icon: npmLogoUrl,
 				onClick: () => (repository ? openOfficialPage('https://npmjs.com') : openGitHub1sPage()),
+			},
+		};
+	}
+
+	if (platform === Platform.JungleTVAF) {
+		return {
+			hideTextFileLabelDecorations: !!repository,
+			windowIndicator: createWindowIndicator(repository),
+			configurationDefaults: createConfigurationDefaults(false),
+			workspace: repository ? createFolderWorkspace('jungletvaf') : undefined,
+			workspaceId: repository ? repository : '',
+			workspaceLabel: repository,
+			logo: {
+				title: 'Open JungleTV',
+				icon: jtvafLogoUrl,
+				onClick: () => (repository ? openJungleTVApplicationPage(repository) : openJungleTVPage()),
 			},
 		};
 	}

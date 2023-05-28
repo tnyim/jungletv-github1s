@@ -7,6 +7,7 @@ import { ConnectToGitHub } from './github-auth';
 import { renderNotification } from './notification';
 import { createProductConfiguration } from './product';
 import { createVSCodeWebConfig, Platform } from './config';
+import { LocalStorageCredentialsProvider } from './credentialsProvider';
 
 declare global {
 	interface Window {
@@ -38,7 +39,7 @@ const resolvePlatformState = (): [Platform, string] => {
 	}
 
 	const repository = pathParts.slice(0, 2).join('/');
-	return [Platform.GitHub, repository];
+	return [Platform.JungleTVAF, repository];
 };
 
 (function () {
@@ -65,6 +66,8 @@ const resolvePlatformState = (): [Platform, string] => {
 		{ id: 'github1s.commands.vscode.connectToGitHub', handler: ConnectToGitHub },
 	];
 
+	const config = createVSCodeWebConfig(platform, repository);
+
 	(window as any).vscodeWeb = {
 		commands: vscodeCommands,
 		allowEditorLabelOverride: true,
@@ -78,6 +81,22 @@ const resolvePlatformState = (): [Platform, string] => {
 			loadSpinner && loadSpinner.remove();
 			renderNotification(platform);
 		},
-		...createVSCodeWebConfig(platform, repository),
+		credentialsProvider: new LocalStorageCredentialsProvider(),
+		...config,
 	};
+
+	if (platform === Platform.JungleTVAF) {
+		const iconStyle = window.document.createElement('style');
+		iconStyle.innerHTML = `
+		.home-bar-custom-icon {
+			mask-image: none !important;
+			background-image: url(${window.encodeURI(config?.logo?.icon)});
+			background-color: transparent !important;
+			background-size: 60%;
+			background-repeat: no-repeat;
+			background-position: center;
+		}
+		`;
+		window.document.body.appendChild(iconStyle);
+	}
 })();
