@@ -99,6 +99,7 @@ module.exports = (env, argv) => {
 		performance: false,
 		devServer: {
 			port: 5000,
+			https: true,
 			liveReload: false,
 			allowedHosts: 'all',
 			static: {
