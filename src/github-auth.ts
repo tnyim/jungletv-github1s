@@ -10,7 +10,7 @@ const OPEN_WINDOW_FEATURES =
 	'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=800,height=520,top=150,left=150';
 const AUTH_PAGE_ORIGIN = 'https://auth.github1s.com';
 
-const timeout = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const timeout = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const ConnectToGitHub = () => {
 	const opener = window.open(GITHUB_AUTH_URL, '_blank', OPEN_WINDOW_FEATURES);

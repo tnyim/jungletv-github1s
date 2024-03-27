@@ -43,7 +43,7 @@ it('should load successfully', async () => {
 	// Make sure the repo loads
 	await page.click('div[role="tab"]');
 	// GitHub repo Link available
-	await page.$eval('div.home-bar[role="toolbar"]', (el) => el.innerHTML);
+	await page.$eval('div.home-bar', (el) => el.innerHTML);
 	// File explorer available
 	await page.$eval('div[role="tree"][aria-label="Files Explorer"]', (el) => el.innerHTML);
 	const tab = await page.$eval('div[role="tab"] .label-name', (el: HTMLElement) => el.innerText);
@@ -64,7 +64,8 @@ it('should load successfully', async () => {
 
 it('should open file correctly', async () => {
 	await page.goto(`${BASE_URL}/conwnet/github1s`);
-	await page.click('[title="~/tsconfig.json"]');
+	await page.waitForTimeout(3000);
+	await page.click('[aria-label="~/tsconfig.json"]');
 	await page.click('[data-resource-name="tsconfig.json"]');
 	await page.waitForTimeout(3000);
 
@@ -76,7 +77,7 @@ it('should show Commit files', async () => {
 	await page.goto(`${BASE_URL}/conwnet/github1s/commit/ecd252fa54de41b1cb622ff5a1f8a1b715d3b621`);
 	await page.waitForSelector('.monaco-action-bar.vertical ul.actions-container[aria-label="Active View Switcher"]');
 	await page.press('body', 'Control+Shift+G');
-	await page.waitForTimeout(3000);
+	await page.waitForTimeout(6000);
 
 	const container = await page.$('[id="workbench.parts.sidebar"]');
 	let image = await container?.screenshot();

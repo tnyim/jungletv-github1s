@@ -42,6 +42,8 @@ const createConfigurationDefaults = (disableSomeAnyCodeFeatures: boolean) => {
 		'workbench.colorTheme': 'Default Dark+',
 		'telemetry.telemetryLevel': 'off',
 		'workbench.startupEditor': 'readme',
+		'workbench.editorAssociations': { '*.md': 'vscode.markdown.preview.editor' },
+		'markdown.preview.doubleClickToSwitchToEditor': false,
 	} as Record<string, any>;
 
 	// disable some anycode features when we can use sourcegraph instead
@@ -80,7 +82,7 @@ export const createVSCodeWebConfig = (platform: Platform, repository: string): a
 			logo: {
 				title: 'Open on GitLab',
 				icon: gitlabLogoUrl,
-				onClick: () => (repository ? openOfficialPage('https://gitlab.com') : openGitHub1sPage()),
+				onClick: () => (repository ? openOfficialPage(GITLAB_ORIGIN) : openGitHub1sPage()),
 			},
 		};
 	}
@@ -145,7 +147,7 @@ export const createVSCodeWebConfig = (platform: Platform, repository: string): a
 		logo: {
 			title: 'Open on GitHub',
 			icon: githubLogoUrl,
-			onClick: () => (repository ? openOfficialPage('https://github.com') : openGitHub1sPage()),
+			onClick: () => (repository ? openOfficialPage(GITHUB_ORIGIN) : openGitHub1sPage()),
 		},
 	};
 };

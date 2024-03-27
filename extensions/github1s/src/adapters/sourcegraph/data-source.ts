@@ -34,25 +34,26 @@ import { getAllRefs } from './ref';
 import { getSymbolReferences } from './reference';
 import { getRepository } from './repository';
 import { getTextSearchResults } from './search';
+import { decorate, memorize } from '@/helpers/func';
 
-type SupportedPlatfrom = 'github' | 'gitlab' | 'bitbucket';
+type SupportedPlatform = 'github' | 'gitlab' | 'bitbucket';
 
 export class SourcegraphDataSource extends DataSource {
-	private static instanceMap: Map<SupportedPlatfrom, SourcegraphDataSource> = new Map();
+	private static instanceMap: Map<SupportedPlatform, SourcegraphDataSource> = new Map();
 	private refsPromiseMap: Map<string, Promise<{ branches: Branch[]; tags: Tag[] }>> = new Map();
-	private repositoryPromiseMap: Map<string, Promise<{ name: string; defaultBranch: string } | null>> = new Map();
+	private repositoryPromiseMap: Map<string, Promise<{ private: boolean; defaultBranch: string } | null>> = new Map();
 	private fileTypeMap: Map<string, FileType> = new Map(); // cache if path is a directory
 	private matchedRefsMap: Map<string, string[]> = new Map();
-	private textEncodder = new TextEncoder();
+	private textEncoder = new TextEncoder();
 
-	public static getInstance(platfrom: SupportedPlatfrom): SourcegraphDataSource {
-		if (!SourcegraphDataSource.instanceMap.has(platfrom)) {
-			SourcegraphDataSource.instanceMap.set(platfrom, new SourcegraphDataSource(platfrom));
+	public static getInstance(platform: SupportedPlatform): SourcegraphDataSource {
+		if (!SourcegraphDataSource.instanceMap.has(platform)) {
+			SourcegraphDataSource.instanceMap.set(platform, new SourcegraphDataSource(platform));
 		}
-		return SourcegraphDataSource.instanceMap.get(platfrom)!;
+		return SourcegraphDataSource.instanceMap.get(platform)!;
 	}
 
-	private constructor(private platform: SupportedPlatfrom) {
+	private constructor(private platform: SupportedPlatform) {
 		super();
 	}
 
@@ -102,15 +103,19 @@ export class SourcegraphDataSource extends DataSource {
 	async provideFile(repo: string, ref: string, path: string): Promise<File> {
 		// sourcegraph api break binary files and text coding, so we use github api first here
 		if (this.platform === 'github') {
+			// For GitHub repositories, request GitHub User Content API first (it seems no Rate Limit),
+			// because Sourcegraph API returns binary data such as pictures in error. If the GitHub User
+			// Content API goes wrong, then try Sourcegraph API. Use `try catch` because if fallback to
+			// GitHub REST API may trigger a pop-up window to request authentication for anonymous users.
 			try {
-				return await fetch(encodeURI(`https://raw.githubusercontent.com/${repo}/${ref}/${path}`))
-					.then((response) => response.arrayBuffer())
+				return fetch(encodeURI(`https://raw.githubusercontent.com/${repo}/${ref}/${path}`))
+					.then((response) => (response.ok ? response.arrayBuffer() : Promise.reject({ response })))
 					.then((buffer) => ({ content: new Uint8Array(buffer) }));
-			} catch (e) {}
+			} catch {}
 		}
 		// TODO: support binary files for other platforms
 		const { content } = await readFile(this.buildRepository(repo), ref, path);
-		return { content: this.textEncodder.encode(content) };
+		return { content: this.textEncoder.encode(content) };
 	}
 
 	async prepareAllRefs(repo: string) {
@@ -120,8 +125,16 @@ export class SourcegraphDataSource extends DataSource {
 		return this.refsPromiseMap.get(repo)!;
 	}
 
+	@decorate(memorize)
+	private async getDefaultBranch(repo: string) {
+		return (await this.provideRepository(repo))?.defaultBranch || 'HEAD';
+	}
+
 	async extractRefPath(repo: string, refAndPath: string): Promise<{ ref: string; path: string }> {
-		if (!refAndPath || refAndPath.match(/^HEAD(\/.*)?$/i)) {
+		if (!refAndPath) {
+			return { ref: await this.getDefaultBranch(repo), path: '' };
+		}
+		if (refAndPath.match(/^HEAD(\/.*)?$/i)) {
 			return { ref: 'HEAD', path: refAndPath.slice(5) };
 		}
 		if (!this.matchedRefsMap.has(repo)) {
