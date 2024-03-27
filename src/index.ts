@@ -100,7 +100,7 @@ const resolvePlatformState = (): [Platform, string] => {
 	if (platform === Platform.JungleTVAF) {
 		const iconStyle = window.document.createElement('style');
 		iconStyle.innerHTML = `
-		.home-bar-custom-icon {
+		.home-bar-clickable {
 			mask-image: none !important;
 			background-image: url(${window.encodeURI(config?.logo?.icon)});
 			background-color: transparent !important;
